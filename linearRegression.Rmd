@@ -1,0 +1,104 @@
+---
+title: "Linear Regression"
+author: "Ravi Kumar Tiwari"
+date: "13 July 2016"
+output: pdf_document
+---
+
+# Linear Regression
+
+Linear Regression is used for modeling quantitative response. 
+This method involves finding a straight line (y = ax + b) that 
+best describes the relationship between the dependent and the independent 
+variables. This best fit line is then used to predict the value of the dependent 
+variable for any given values of the independent variables. 
+
+## 1: Example
+Linear model depicting the relationship between wt (weight of the car) and mpg (miles per gallon) variable of mtcars datasets
+
+```{r, echo=FALSE}
+plot(mtcars$wt, mtcars$mpg, xlab="wt", ylab="mpg", col = "blue", pch = 20, 
+     xlim = c(0,5.5), ylim = c(5,40))
+
+lmModel <- lm(mpg ~ wt, data = mtcars)  # creates the linear model (lm)
+abline(lmModel)    # plots the model
+
+# Below codes generate the model prediction when wt is 3 and displays
+# the value on the existing plot
+predValue <- predict(lmModel, data.frame(wt = 3))
+points(3, predValue, pch = 4, col = "red")  
+lines(x = c(3,3), y = c(-0.2, predValue), lty = 2)
+lines(x = c(3,-0.2), y = c(predValue, predValue), lty = 2)
+text(0.2,23, labels = round(predValue,2))
+
+# Below codes generate the model prediction when wt is 4 and displays
+# the value on the existing plot
+predValue <- predict(lmModel, data.frame(wt = 4))
+points(4, predValue, pch = 4, col = "red")  
+lines(x = c(4,4), y = c(-0.2, predValue), lty = 2)
+lines(x = c(4,-0.2), y = c(predValue, predValue), lty = 2)
+text(0.2,17.2, labels = round(predValue,2))
+legend(x=3.8,y=39, legend = "Actual Value", pch=19, col = "blue", bty = "n")
+legend(x=3.8,y=36, legend = c("model"), lty=1, col = "black", bty = "n")
+```
+
+## 2: Code for model building and prediction
+
+Model Building
+```{r, echo=TRUE, results='hide'} 
+lmModel <- lm(mpg ~ wt, data = mtcars)
+```
+
+Model Prediction
+```{r, echo=TRUE, results='hide'}
+predValue <- predict(lmModel, data.frame(wt = 3))
+predValue <- predict(lmModel, data.frame(wt = c(3,4)))
+predValue <- predict(lmModel, data.frame(wt = mtcars$wt))
+```
+
+## 3: Code to access the model parameters
+
+```{r}
+coef(lmModel)
+```
+
+Interpretation: The intercept is the model prediction for the case when the 
+independent variable is 0. The slope is the change in the dependent 
+variable when the independent variable changes by 1 unit. Look at 
+the plot, we created earlier and verify this is indeed true
+
+## 4: Model performance assessment 
+
+I. Visual Inspection (Residual Plot)
+
+```{r, echo=FALSE, results='hide'}
+plot(mtcars$wt, mtcars$mpg, xlab="wt", ylab="mpg", col = "blue", 
+     pch = 20, ylim = c(5,40))
+abline(lmModel)
+segments(mtcars$wt, predValue, mtcars$wt, mtcars$mpg, col="red")
+legend(x=4.2,y=38, legend = "Actual Value", pch=19, col = "blue", bty = "n")
+legend(x=4.2,y=35, legend = c("model"), lty=1, col = "black", bty = "n")
+legend(x=4.2,y=32, legend = c("residual"), lty=1, col = "red", bty = "n")
+```
+
+II. R-squared value
+
+R-squared is the measure of goodness of fit. Higher the R-squared value, better is the fit. Mathematically, R-squared = Explained Variation / Total Variation. 
+In other words, R-squared is the percentage of the total variation in the y value that the model is able to explain
+
+```{r}
+sumModel <- summary(lmModel)
+sumModel$r.squared
+r <- cor(mtcars$mpg, mtcars$wt)
+r^2 
+```
+
+r.squared is literally the r (correlation coefficient) squared
+
+## 5: Code to build models with  more than one predictors
+
+```{r}
+lmModel2 <- lm(mpg ~ wt + hp + disp, data = mtcars) # wt, hp, and disp will be used as predictor
+lmModel3  <- lm(mpg ~ ., data = mtcars)   # All the variables will be used
+```
+
