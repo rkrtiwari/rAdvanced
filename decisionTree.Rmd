@@ -1,0 +1,106 @@
+---
+title: "Decision Tree"
+author: "Ravi Kumar Tiwari"
+date: "13 July 2016"
+output: pdf_document
+---
+# Classification
+## Tree based algorithm
+
+Tree based algorithms are used to model both quantitative and qualitative response. 
+
+### 3.1 Decision Tree
+
+This approach involves dividing the predictor variables into smaller regions (using decision rules that combine to form a decision tree) such that response within these regions are (nearly) homogeneous. The response corresponding to a given observation is determined based on the region it falls into. For qualitative response, it is assigned the most dominant class of the region. For quantitative response, it is assigned the mean of the response values in the region
+
+Example
+
+Decision tree showing decision rules to determine the species of a 
+flower based on its Sepal and Petal measurments. On the right, the 
+regions that results from those rules are shown. We look at the data,
+first
+
+```{r}
+iris[c(1,100,150),]
+```
+
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+## Load the required libraries
+library(rpart)
+library(rpart.plot)
+
+## create data partition
+set.seed(1)
+inTrain <- sample(c(TRUE, FALSE), size = nrow(iris), replace = TRUE, prob = c(0.6,0.4))
+trainData <- iris[inTrain,]
+testData <- iris[!inTrain,1:4]
+testClass <- iris[!inTrain,5]
+
+## create the tree model and make prediction using the tree model
+treeModel <- rpart(Species ~ ., data = trainData)
+predClass <- predict(treeModel, newdata = testData, type = "class")
+
+# Plot the tree
+par(mfrow=c(1,2)) # will partition the plot area into two regions
+rpart.plot(treeModel, type = 0) ## Decision tree Plot
+
+## Decision area plot
+col <- ifelse(trainData$Species == "setosa", "red", 
+              ifelse(trainData$Species== "virginica", "green", "blue"))
+pty <- ifelse(trainData$Species == "setosa", 8, 
+              ifelse(trainData$Species== "virginica", 3, 4))
+
+plot(trainData$Petal.Length, trainData$Petal.Width, col = col, 
+     pch = pty, xlab = "Petal Length", ylab = "Petal Width",
+     cex=0.5)
+
+abline(v = 2.6)
+segments(2.6, 1.75, 7.2, 1.75)
+text(x = 1.52, y = 1.5, labels = "sesota", cex = 0.75)
+text(x = 3.6, y = 2.0, labels = "virginica", cex = 0.75)
+text(x = 3.9, y = 0.8, labels = "versicolor", cex = 0.75)
+legend(x=4.6,y=0.75, legend = c("setosa", "versicolor" , "virginica"), 
+       col = c("red", "blue", "green"), 
+       pch = c(8,4,3), cex = 0.75, bty = "n")
+```
+
+
+## Code to create decision tree model
+
+```{r, echo=TRUE, results='hide'}
+## Load the required libraries
+library(rpart)
+library(rpart.plot)
+
+## create data partition
+set.seed(1)
+inTrain <- sample(c(TRUE, FALSE), size = nrow(iris), replace = TRUE, prob = c(0.6,0.4))
+trainData <- iris[inTrain,]
+testData <- iris[!inTrain,1:4]
+testClass <- iris[!inTrain,5]
+
+## create the tree model and make prediction using the tree model
+treeModel <- rpart(Species ~ ., data = trainData)
+predClass <- predict(treeModel, newdata = testData, type = "class")
+
+# Plot the tree
+#rpart.plot(treeModel, type = 0)
+```
+
+## code for making prediction using the decision tree
+```{r}
+predTrainClass <- predict(treeModel, newdata = trainData, type = "class")
+predTestClass <- predict(treeModel, newdata = testData, type = "class")
+```
+
+## Evaluating the performance of the decision tree
+```{r, echo=TRUE}
+## Training Data
+table(predTrainClass, trainData$Species)  # Confusion Matrix
+mean(predTrainClass == trainData$Species) # Prediction Accuracy
+
+## Test Data
+table(predTestClass, testClass)           # Confusion Matrix
+mean(predTestClass == testClass)        
+```
