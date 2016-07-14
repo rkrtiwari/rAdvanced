@@ -83,4 +83,40 @@ ggplot(meanValm) + aes(x=factor(month), y= value, fill = factor(month)) +
 ########################################################################################################
 # Missing Data
 #######################################################################################################
+#install.packages("mice")
+#install.packages("VIM")
+library(mice)
+library(VIM) 
+
+set.seed(2) 
+miss_mtcars <- mtcars 
+
+some_rows <- sample(1:nrow(miss_mtcars), 7) 
+miss_mtcars$drat[some_rows] <- NA
+
+some_rows <- sample(1:nrow(miss_mtcars), 5) 
+miss_mtcars$mpg[some_rows] <- NA
+
+some_rows <- sample(1:nrow(miss_mtcars), 5)
+miss_mtcars$cyl[some_rows] <- NA
+
+some_rows <- sample(1:nrow(miss_mtcars), 3) 
+miss_mtcars$wt[some_rows] <- NA
+
+some_rows <- sample(1:nrow(miss_mtcars), 3) 
+miss_mtcars$vs[some_rows] <- NA 
+
+only_automatic <- which(miss_mtcars$am==0) 
+some_rows <- sample(only_automatic, 4) 
+miss_mtcars$qsec[some_rows] <- NA
+
+nrow(miss_mtcars)
+miss_mtcars[16,]
+
+md.pattern(miss_mtcars) #  Cells with a 1 represent nonmissing data; 0s represent missing data.
+mpattern <- md.pattern(miss_mtcars)
+sum(as.numeric(row.names(mpattern)), na.rm = TRUE)
+
+aggr(miss_mtcars, numbers=TRUE) # visualize the missing data pattern graphically 
+
 
