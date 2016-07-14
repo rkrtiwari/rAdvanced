@@ -1,0 +1,220 @@
+---
+title: "Decision Tree"
+author: "Ravi Kumar Tiwari"
+date: "13 July 2016"
+output: pdf_document
+---
+# Classification
+ 
+## 1: Decision Tree
+
+This approach involves dividing the predictor variables into smaller regions (using decision rules that combine to form a decision tree) such that response within these regions are (nearly) homogeneous. The response corresponding to a given observation is determined based on the region it falls into. For qualitative response, it is assigned the most dominant class of the region. For quantitative response, it is assigned the mean of the response values in the region
+
+Example:
+
+Decision tree showing decision rules to determine the species of a 
+flower based on its Sepal and Petal measurments. On the right, the 
+regions that results from those rules are shown. We look at the data,
+first
+
+```{r}
+iris[c(1,100,150),]
+```
+
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+## Load the required libraries
+library(rpart)
+library(rpart.plot)
+
+## create data partition
+set.seed(1)
+inTrain <- sample(c(TRUE, FALSE), size = nrow(iris), replace = TRUE, prob = c(0.6,0.4))
+trainData <- iris[inTrain,]
+testData <- iris[!inTrain,1:4]
+testClass <- iris[!inTrain,5]
+
+## create the tree model and make prediction using the tree model
+treeModel <- rpart(Species ~ ., data = trainData)
+predClass <- predict(treeModel, newdata = testData, type = "class")
+
+# Plot the tree
+par(mfrow=c(1,2)) # will partition the plot area into two regions
+rpart.plot(treeModel, type = 0) ## Decision tree Plot
+
+## Decision area plot
+col <- ifelse(trainData$Species == "setosa", "red", 
+              ifelse(trainData$Species== "virginica", "green", "blue"))
+pty <- ifelse(trainData$Species == "setosa", 8, 
+              ifelse(trainData$Species== "virginica", 3, 4))
+
+plot(trainData$Petal.Length, trainData$Petal.Width, col = col, 
+     pch = pty, xlab = "Petal Length", ylab = "Petal Width",
+     cex=0.5)
+
+abline(v = 2.6)
+segments(2.6, 1.75, 7.2, 1.75)
+text(x = 1.52, y = 1.5, labels = "sesota", cex = 0.75)
+text(x = 3.6, y = 2.0, labels = "virginica", cex = 0.75)
+text(x = 3.9, y = 0.8, labels = "versicolor", cex = 0.75)
+legend(x=4.6,y=0.75, legend = c("setosa", "versicolor" , "virginica"), 
+       col = c("red", "blue", "green"), 
+       pch = c(8,4,3), cex = 0.75, bty = "n")
+```
+
+
+### 1.1: Code to create decision tree model
+
+```{r, echo=TRUE, results='hide'}
+## Load the required libraries
+library(rpart)
+library(rpart.plot)
+
+## create data partition
+set.seed(1)
+inTrain <- sample(c(TRUE, FALSE), size = nrow(iris), replace = TRUE, prob = c(0.6,0.4))
+trainData <- iris[inTrain,]
+testData <- iris[!inTrain,1:4]
+testClass <- iris[!inTrain,5]
+
+## create the tree model and make prediction using the tree model
+treeModel <- rpart(Species ~ ., data = trainData)
+predClass <- predict(treeModel, newdata = testData, type = "class")
+
+# Plot the tree
+#rpart.plot(treeModel, type = 0)
+```
+
+### 1.2: Code for making prediction using the decision tree
+```{r}
+predTrainClass <- predict(treeModel, newdata = trainData, type = "class")
+predTestClass <- predict(treeModel, newdata = testData, type = "class")
+```
+
+### 1.3: Evaluating the performance of the decision tree
+```{r, echo=TRUE}
+## Training Data
+table(predTrainClass, trainData$Species)  # Confusion Matrix
+mean(predTrainClass == trainData$Species) # Prediction Accuracy
+
+## Test Data
+table(predTestClass, testClass)           # Confusion Matrix
+mean(predTestClass == testClass)        
+```
+
+\newpage
+
+## 2: Random Forest
+It fits a number of decision tree classifiers on various sub-samples of the dataset and uses averaging for prediction. 
+
+Important parameters of the random forest are: 1) ntree, 2) mtry
+
+1. ntree
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+library(knitr)
+include_graphics("ntree2.png")
+```
+
+2. mtry
+
+```{r, echo=FALSE}
+include_graphics("mtry5.png")
+```
+
+\newpage
+
+### 2.1: Code to build random forest model
+
+```{r, message = FALSE, warning = FALSE, results='hide'}
+library(randomForest)
+set.seed(1)
+rfModel <- randomForest(Species ~ ., data=iris, mtry=4, ntree=20)
+predClass <- predict(rfModel, newdata = iris)
+table(predClass, iris$Species)
+rfModel$importance 
+```
+
+### 2.2 Prediction Accuracy
+
+```{r, echo = FALSE, message=FALSE, warning=FALSE}
+set.seed(1)
+rfModel <- randomForest(Species ~ ., data=iris, mtry=3, ntree=3)
+predClass <- predict(rfModel, newdata = iris)
+table(predClass, iris$Species)
+```
+
+### 2.3 Variable Importance
+
+```{r, echo=FALSE}
+par(mar = c(4,8,4,2))
+barplot(rfModel$importance, names.arg = row.names(rfModel$importance), 
+        beside = TRUE, width = 0.2, las = 2, horiz = TRUE, col = "blue", space = 0.3,
+        xlab = "MeanDecreaseGini")
+par(mar = c(5.1, 4.1, 4.1, 2.1))
+```
+
+\newpage
+
+## 3. Logistic Regression
+
+Logistic Regression is used for modeling qualitative Response. This approach involves fitting data to a logistic function whose output represents the class probability of an observation.
+A new observation is assigned a class based on its class probability and the chosen cut-off value.
+
+### 3.1: Example
+
+Logistic regression model for flower Species prediction based on its Petal.Length. The cut-off value for the class separation has been chosen to be 0.5.   
+
+```{r, results='hide', echo=FALSE}
+inSetosa <- iris$Species == "setosa"
+myIris <- iris[!inSetosa,]
+myIris$Species <- factor(myIris$Species, levels = c("versicolor", "virginica"))
+
+glmModel <- glm(Species ~ Petal.Length, data = myIris, family = binomial(link="logit"))
+predValue <- predict(glmModel, myIris, type = "response")
+
+pch <- ifelse(myIris$Species == "versicolor", 3, 4)
+col <- ifelse(myIris$Species == "versicolor", "red", "green")
+
+plot(jitter(myIris$Petal.Length, amount = 0.05),predValue, col = col, 
+     pch = pch, ylab = "p(virginica)", xlab = "jitter(Petal.Length)")
+abline(h=0.5, lty = 2)
+legend(x=3, y = 1.0, legend = c("virginica", "versicolor"), pch = c(4,3), 
+       col=c("green", "red"))
+text(x=6, y= 0.55, label = "cut-off")
+```
+
+
+### 3.2: Code to create logistic regression model
+
+```{r, results='hide'}
+## In order to have only two classes, observations corresponding 
+## to Species, setosa, has been removed 
+inSetosa <- iris$Species == "setosa"
+myIris <- iris[!inSetosa,]
+myIris$Species <- factor(myIris$Species, levels = c("versicolor", "virginica"))
+
+## Model training, prediction, and validation
+glmModel <- glm(Species ~ Petal.Length, data = myIris, family = binomial(link="logit"))
+predValue <- predict(glmModel, myIris, type = "response")
+prediction <- ifelse(predValue > 0.5, "virginica", "versicolor")
+table(prediction, myIris$Species)
+```
+
+### 3.3: Model Assessment
+
+```{r}
+prediction <- ifelse(predValue > 0.5, "virginica", "versicolor")
+table(prediction, myIris$Species)
+```
+
+### 3.4: Adding more predictor variables
+```{r, results='hide'}
+## Adding more predictor variable
+glmModel <- glm(Species ~ Petal.Length + Petal.Width, data = myIris, 
+                family = binomial(link="logit"))
+predValue <- predict(glmModel, myIris, type = "response")
+prediction <- ifelse(predValue > 0.5, "virginica", "versicolor")
+table(prediction, myIris$Species)
+```
+
