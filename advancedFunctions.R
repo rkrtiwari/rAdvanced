@@ -24,6 +24,11 @@ lapply(mtcars, range)
 unlist(lapply(mtcars, range))
 sapply(mtcars, range)
 
+## Challenge: Find the mean of Sepal.Length, Sepal.Width, Petal.Length and Petal.Width in the 
+## iris data set
+head(iris)
+
+
 ##################################################################################################
 # tapply and aggregate
 ##################################################################################################
@@ -38,6 +43,10 @@ tapply(mtcars$mpg, mtcars[,c(2,9)], mean)
 aggregate(mtcars$mpg, list(mtcars$cyl), FUN=mean)
 aggregate(mtcars$mpg, by=list(mtcars$cyl,mtcars$am), FUN=mean)
 
+## Challenge: Find the mean of Petal.Length for each species in iris data set
+## Find the mean of all four lengths for each species in the iris data set
+head(iris)
+
 ######################################################################################################
 # split
 ######################################################################################################
@@ -49,4 +58,7 @@ myFun <- function(x){
 }
 
 lapply(mpgCyl, myFun)
+
+
+
 
