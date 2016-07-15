@@ -22,7 +22,7 @@ ggplot( mtcars, aes(x = factor( cyl), y = mpg)) +
 ggplot( mtcars, aes(x = cyl, y = mpg)) + 
   geom_boxplot(width = 0.9, color = "black", fill = "red")  
 
-# 1. scatter plot
+# 5. scatter plot
 ggplot(mtcars) + aes(x=wt, y=mpg) + geom_point()
 
 ## Setting the size of the points in the scatter plot
@@ -35,20 +35,20 @@ ggplot(mtcars) + aes(x=wt, y=mpg) + geom_point(size=3, color = "blue")
 ggplot(mtcars) + aes(x=wt, y=mpg) + 
   geom_point(size=3, color = "blue", shape = 17)
 
-# 2. Changing labels
+## Changing labels
 ggplot(mtcars) + aes(x=wt, y=mpg) + geom_point() +
   labs(x = "Weight", y = "Miles per Gallon", title = "My Plot") +
   theme(axis.text = element_text(colour = "blue"),
         axis.title = element_text(size = rel(1.5), angle = 0),
         plot.title = element_text(size = rel(2.5), colour = "green"))
   
-# 3. Changing x and y scale
+## Changing x and y scale
 ggplot(mtcars) + aes(x=wt, y=mpg) + geom_point() +
   scale_x_continuous(limits = c(1.5,6.5)) +
   scale_y_continuous(limits = c(5,35))
 
 
-## 3. Grouping data points by variable
+## Grouping data points by variable
 ggplot(mtcars) + aes(x=wt, y=mpg, color = cyl ) + 
   geom_point(size=3, shape = 17)
 
@@ -65,7 +65,7 @@ ggplot(mtcars) + aes(x=wt, y=mpg, color = factor(cyl), shape = factor(am)) +
   geom_point(size=5) + scale_shape_manual(values = c(17,18)) +
   scale_color_brewer(palette = "Set1")
 
-## 4. Adding trend line
+## Adding trend line
 ggplot(mtcars) + aes(x=wt, y=mpg) + 
   geom_point(size=3, color = "blue", shape = 17) +
   stat_smooth(method = "lm")
@@ -88,7 +88,7 @@ ggplot(mtcars) + aes(x=wt, y=mpg) +
   geom_point(size=3, color = "blue", shape = 17) +
   facet_grid( cyl ~ am)
 
-# Faceting 2
+## Faceting 2
 library(reshape2)
 mmtcars <- melt(mtcars2, id = c("names", "wt", "hp"), measure.vars = "mpg")
 mmtcars <- melt(mtcars, id = "mpg", measure.vars = c("wt", "hp", "qsec", "drat"))
