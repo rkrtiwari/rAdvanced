@@ -6,7 +6,7 @@
 library(dplyr)
 head(mtcars)
 
-mutate(mtcars, displ_l = disp / 61.0237)
+mutate(mtcars, displ_l = disp / 61.0237)  # change of units
 range(mtcars$wt)
 mutate(mtcars, heavy = ifelse(wt > 3, "yes", "no"))
 mutate(mtcars, hpPerWt = hp/wt)
@@ -58,12 +58,6 @@ names(airquality) <- tolower(names(airquality))
 head(airquality)
 nrow(airquality)
 
-ggplot(airquality) + aes(x=day, y = ozone) +
-  geom_point() + facet_grid( month ~ .)
-
-ggplot(airquality) + aes(x=day, y = temp) +
-  geom_point() + facet_grid(. ~ month)
-
 aqm <- melt(airquality, id=c("month", "day"), measure.vars = c("ozone", "temp"), 
             na.rm=TRUE)
 head(aqm)
@@ -88,6 +82,7 @@ ggplot(meanValm) + aes(x=factor(month), y= value, fill = factor(month)) +
 library(mice)
 library(VIM) 
 
+## Create data set with missing values
 set.seed(2) 
 miss_mtcars <- mtcars 
 
@@ -111,12 +106,33 @@ some_rows <- sample(only_automatic, 4)
 miss_mtcars$qsec[some_rows] <- NA
 
 nrow(miss_mtcars)
-miss_mtcars[16,]
 
+## Visualization of the missing pattern
 md.pattern(miss_mtcars) #  Cells with a 1 represent nonmissing data; 0s represent missing data.
 mpattern <- md.pattern(miss_mtcars)
 sum(as.numeric(row.names(mpattern)), na.rm = TRUE)
 
 aggr(miss_mtcars, numbers=TRUE) # visualize the missing data pattern graphically 
+
+## missing data imputation
+## convert categorical variables into factors 
+
+miss_mtcars$vs <- factor(miss_mtcars$vs) 
+miss_mtcars$cyl <- factor(miss_mtcars$cyl)
+imp <- mice(miss_mtcars, m=20, seed=3, printFlag=FALSE) 
+imp$method 
+imp$imp
+imp$imp$mpg
+
+## Creating lm model on the missing data
+imp_models <- with(imp, lm(mpg ~ am + wt + qsec)) 
+lapply(imp_models$analyses, coef)
+pooled_model <- pool(imp_models)
+summary(pooled_model) 
+pooled_model
+
+lm1 <- lm(mpg ~ am + wt + qsec, data = mtcars)
+coef(lm1)
+
 
 
