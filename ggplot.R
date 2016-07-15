@@ -75,7 +75,7 @@ ggplot(mtcars) + aes(x=wt, y=mpg) +
   stat_smooth(method = "lm", se = FALSE)
 
 
-## Faceting
+## Faceting 1
 ggplot(mtcars) + aes(x=wt, y=mpg) + 
   geom_point(size=3, color = "blue", shape = 17) +
   facet_grid(. ~ cyl)
@@ -87,3 +87,25 @@ ggplot(mtcars) + aes(x=wt, y=mpg) +
 ggplot(mtcars) + aes(x=wt, y=mpg) + 
   geom_point(size=3, color = "blue", shape = 17) +
   facet_grid( cyl ~ am)
+
+# Faceting 2
+library(reshape2)
+mmtcars <- melt(mtcars2, id = c("names", "wt", "hp"), measure.vars = "mpg")
+mmtcars <- melt(mtcars, id = "mpg", measure.vars = c("wt", "hp", "qsec", "drat"))
+head(mmtcars)
+ggplot(mmtcars) + aes(x=value, y = mpg, color = variable) + geom_point(size = 3) +
+  facet_wrap( ~ variable, scales = "free", ncol = 2)
+
+## Faceting 3
+aqm <- melt(airquality, id=c("month", "day"), measure.vars = c("ozone", "temp"), 
+            na.rm=TRUE)
+meanVal <- dcast(aqm, month ~ variable, mean)
+meanValm <- melt(meanVal, id = "month")
+ggplot(meanValm) + aes(x=factor(month), y= value, fill = factor(month)) + 
+  geom_bar(stat="identity") +
+  facet_grid( . ~ variable) +
+  theme(axis.title = element_text(size = rel(1.5)),
+        axis.text = element_text(size   = rel(1.5)),
+        strip.text.x = element_text(size = rel(1.5)))
+
+
