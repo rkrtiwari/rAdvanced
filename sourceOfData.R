@@ -17,36 +17,18 @@ write.table(data2, file = "redata2.csv", quote = FALSE, row.names = FALSE, sep =
 ##install.packages("jsonlite")
 library(jsonlite)
 
-example.json <- ' 
-                 {
-                   "thebeatles": { 
-                       "formed": 1960,    
-                       "members": [
-                          {"firstname": "George", 
-                            "lastname": "Harrison"
-                          },      
-                          {
-                            "firstname": "Ringo",  
-                            "lastname": "Starr"   
-                          },      
-                          {
-                            "firstname": "Paul",   
-                            "lastname": "McCartney"
-                          },
-                          {
-                            "firstname": "John",   
-                            "lastname": "Lennon"
-                          }
-                        ]
-                      }
-                   }'
+employees.json <- '{
+  "employees":[
+  {"firstName":"John", "lastName":"Doe"},
+  {"firstName":"Anna", "lastName":"Smith"},
+  {"firstName":"Peter", "lastName":"Jones"}
+  ]
+  }'
 
-the_beatles <- fromJSON(example.json)  # read in the string
-the_beatles
-names(the_beatles)
-names(the_beatles$thebeatles)
-the_beatles$thebeatles$formed
-the_beatles$thebeatles$members
+employee <- fromJSON(employees.json)  # read in the string
+employee
+names(employee)
+employee$employees
 
 jsonIris <- toJSON(iris[1:3,], pretty = TRUE)
 jsonIris
@@ -58,62 +40,33 @@ fromJSON("iris.json")                # read json data from a file
 ###########################################################################################################
 ## XML file
 ###########################################################################################################
-example_xml1 <- ' <the_beatles>  
-                     <formed>1960</formed>  
-                       <members>    
-                        <member>
-                          <first_name>George</first_name>
-                          <last_name>Harrison</last_name>
-                         </member>
-                        <member>
-                          <first_name>Ringo</first_name>
-                          <last_name>Starr</last_name>
-                         </member>                        
-                        <member>
-                          <first_name>Paul</first_name>
-                          <last_name>McCartney</last_name>
-                         </member> 
-                        <member>
-                          <first_name>John</first_name>
-                          <last_name>Lennon</last_name>
-                         </member>  
-                         </members> 
-                      </the_beatles>' 
+employee.xml <- '<employees>
+    <employee>
+        <firstName>John</firstName> <lastName>Doe</lastName>
+    </employee>
+    <employee>
+        <firstName>Anna</firstName> <lastName>Smith</lastName>
+    </employee>
+    <employee>
+        <firstName>Peter</firstName> <lastName>Jones</lastName>
+    </employee>
+</employees>'
 
 library(XML) 
-the_beatles <- xmlTreeParse(example_xml1)
-print(names(the_beatles))
+employee <- xmlTreeParse(employee.xml)
+names(employee)
+employee$doc
 
-print(the_beatles$doc)
-print(xmlValue(the_beatles$doc$children$the_beatles[["formed"]]))
-root <- xmlRoot(the_beatles) 
-sapply(xmlChildren(root[["members"]]), function(x){    
-                                        xmlValue(x[["first_name"]]) 
-  })
+class(employee)
 
+xmltop <- xmlRoot(employee)
+xmltop[2]
 
-all_first_names <- "//member/first_name" 
-the_beatles <- xmlParse(example_xml1) 
-getNodeSet(the_beatles, all_first_names)
+empName <- xmlSApply(xmltop, function(x) xmlSApply(x, xmlValue))
+empName
 
+empNameDf <- data.frame(t(empName), row.names = NULL)
 
-getNodeSet(the_beatles, "//first_name")
-getNodeSet(the_beatles, "/the_beatles/members/member/first_name") 
-sapply(getNodeSet(the_beatles, all_first_names), xmlValue)
-
-
-## another example of xml
-example_xml2 <- '<the_beatles formed="1990">  
-                          <members>    
-                            <member first_name="George" last_name="Harrison"/>    
-                            <member first_name="Richard" last_name="Starkey"/>    
-                            <member first_name="Paul" last_name="McCartney"/>    
-                            <member first_name="John" last_name="Lennon"/>  
-                          </members> 
-                      </the_beatles>' 
-
-sapply(getNodeSet(the_beatles, "//member[@first_name]"),  
-       function(x){ xmlAttrs(x)[["first_name"]] })
 
 
 #########################################################################################################
@@ -123,6 +76,8 @@ browseURL("http://archive.ics.uci.edu/ml/machine-learning-databases/wine/wine.da
 url <- "http://archive.ics.uci.edu/ml/machine-learning-databases/wine/wine.data"
 read.table(url, nrows=5, header = FALSE, sep = ",")
 
+## Challenge: download the boston housing dataset and save it under the name house
+url <- "https://archive.ics.uci.edu/ml/machine-learning-databases/housing/housing.data"
 
 ###########################################################################################################
 # Reading data using API
