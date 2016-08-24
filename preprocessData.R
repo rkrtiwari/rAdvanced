@@ -15,29 +15,22 @@ mutate(mtcars, hpPerWt = hp/wt)
 ###########################################################################################################
 # Data Merging
 ###########################################################################################################
-authors <- data.frame(
-  surname = I(c("Tukey", "Venables", "Tierney", "Ripley", "McNeil")),
-  nationality = c("US", "Australia", "US", "UK", "Australia"),
-  deceased = c("yes", rep("no", 4)))
+df1 <- data.frame(CustomerId = c(1:6), Product = c(rep("Toaster", 3), 
+                                                   rep("Radio", 3)))
+df2 <- data.frame(CustomerId = c(2, 4, 6, 7), State = c(rep("Alabama", 2),
+                                                        rep("Ohio", 1), "Texas"))
+df1
+df2
+merge(df1, df2, by = "CustomerId")  # inner join
+merge(df2, df1, by = "CustomerId")  # inner join
 
-books <- data.frame(
-  name = I(c("Tukey", "Venables", "Tierney",
-             "Ripley", "Ripley", "McNeil", "R Core")),
-  title = c("Exploratory Data Analysis",
-            "Modern Applied Statistics ...",
-            "LISP-STAT",
-            "Spatial Statistics", "Stochastic Simulation",
-            "Interactive Data Analysis",
-            "An Introduction to R"),
-  other.author = c(NA, "Ripley", NA, NA, NA, NA,
-                   "Venables & Smith"))
+merge(df1, df2, by = "CustomerId", all = TRUE)  # outer join
+merge(df1, df2, by = "CustomerId", all.x = TRUE) # Left outer join
+merge(df1, df2, by = "CustomerId", all.y = TRUE) # right outer join
 
-authors
-books
-
-merge(authors, books, by.x = "surname", by.y = "name")
-merge(authors, books, by.x = "surname", by.y = "name")
-
+df3 <- data.frame(id = c(2, 4, 6, 7), State = c(rep("Alabama", 2),
+                                                rep("Ohio", 1), "Texas"))
+merge(df1, df3, by.x="CustomerId", by.y = "id")
 
 ##########################################################################################################
 #Data Reshaping
@@ -66,7 +59,9 @@ dcast(aqm, month + day ~ variable)
 dcast(aqm, day + month ~ variable)
 meanVal <- dcast(aqm, month ~ variable, mean) # monthly average
 
-ggplot(meanVal) + aes(x=month, y= ozone, fill = factor(month)) + geom_bar(stat="identity")
+library(ggplot2)
+ggplot(meanVal) + aes(x=month, y= ozone, fill = factor(month)) + 
+  geom_bar(stat="identity")
 
 ## Advantage of melting. We can plot 2 histograms in 1 command
 meanValm <- melt(meanVal, id = "month")
