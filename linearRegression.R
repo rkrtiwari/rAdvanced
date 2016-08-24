@@ -30,3 +30,26 @@ sumModel$r.squared
 
 sumModel <- summary(lmModel3)
 sumModel$r.squared
+
+# Build a linear model to predict the House Price in Boston
+
+# Download the data set 
+url <- "https://archive.ics.uci.edu/ml/machine-learning-databases/housing/housing.data"
+boston <- read.table(url, header = FALSE, nrows = -1)
+names(boston) <- c("CRIM", "ZN", "INDUS", "CHAS", "NOX", "RM", "AGE", "DIS", "RAD",
+                   "TAX", "PTRATIO", "B", "LSTAT", "MEDV")
+
+head(boston)
+
+# 7.2 Build the linear model (we want to predict MEDV using all other 
+# variables)
+
+
+# 7.3 Make the prediction
+
+
+# 7.4 Look at the parameters associated with the model. coefficients, r-squared value
+
+# 7.5 Access the model performance. Use root mean square value
+
+
