@@ -1,41 +1,80 @@
-##########################################################################################################
-# Decision Tree
-#########################################################################################################
-## Look at the data set
-iris[c(1,100,150),]
+##############################################################################
+# We will make a decision tree model to predict the Species of a flower based
+# on its sepal and petal measurement
+##############################################################################
 
-## Load the required libraries
-library(rpart)
-library(rpart.plot)
+# 1. Load the required libraries
+## install.packages("rpart")
+## install.packages("rpart.plot")
+library(rpart)  # library for decision tree
+library(rpart.plot)  # For decision tree visualization
 
-## create the tree model
-## create data partition
+
+# 2. Understanding the data set
+head(iris)
+summary(iris)
+str(iris)
+
+col <- ifelse(iris$Species == "setosa", "red", 
+              ifelse(iris$Species== "virginica", "green", "blue"))
+plot(iris$Petal.Length, iris$Petal.Width, col = col, 
+     xlab = "Petal Length", ylab = "Petal Width") 
+legend(x=0.9,y=2.5, legend=c("Setosa", "Versicolor", "Virginica"),
+       col = c("red", "blue", "green"), pch = 1, bty = "n")
+
+# 3. Building the decision tree model
+## 3.a Splitting the data set into training and testing data set
+nr <- nrow(iris)
+inTrain <- sample(1:nr, 0.6*nr)
+train <- iris[inTrain,]
+test <- iris[-inTrain, 1:4]
+testClass <- iris[-inTrain, 5]
+
+## 3.b Training the tree model
+treeModel <- rpart(Species ~ ., data = train)
+#treeModel <- rpart(Species ~ Petal.Width + Petal.Length, data = iris)
+rpart.plot(treeModel)
+
+## 3.c Making prediction with the tree model
+test[1,]
+predict(treeModel, test[1,], type = "class")
+testClass[1]
+
+predClass <-  predict(treeModel, test, type = "class")
+predClass
+
+## 4. Checking the accuracy of the model
+mean(predClass == testClass) # % accuracy
+table(predClass, testClass)  # Confusion Matrix
+table(predClass)
+
+## 5. Challenge
+# Build a decision tree model to predict the House Price in Boston
+
+#5.1 Download the data set 
+url <- "https://archive.ics.uci.edu/ml/machine-learning-databases/housing/housing.data"
+boston <- read.table(url, header = FALSE, nrows = -1)
+names(boston) <- c("CRIM", "ZN", "INDUS", "CHAS", "NOX", "RM", "AGE", "DIS", "RAD",
+                   "TAX", "PTRATIO", "B", "LSTAT", "MEDV")
+
+head(boston)
+
+# 5.2 Split the data into train (60%) and test (40%) set
+nr <- nrow(boston)
 set.seed(1)
-inTrain <- sample(c(TRUE, FALSE), size = nrow(iris), replace = TRUE, prob = c(0.6,0.4))
-trainData <- iris[inTrain,]
-testData <- iris[!inTrain,1:4]
-testClass <- iris[!inTrain,5]
 
-## create the tree model and make prediction using the tree model
-treeModel <- rpart(Species ~ ., data = trainData)
-predClass <- predict(treeModel, newdata = testData, type = "class")
 
-# Plot the tree
-par(mfrow=c(1,1))
-rpart.plot(treeModel, type = 0)
 
-## Use the tree model to predict the class of the test data
-predTrainClass <- predict(treeModel, newdata = trainData, type = "class")
-predTrainClass
-predTestClass <- predict(treeModel, newdata = testData, type = "class")
-predTestClass
+# 5.3 Make the decision tree model (we want to predict MEDV using all other 
+# variables)
 
-## Find out the performance of the decision tree
-table(predTrainClass, trainData$Species)  # Confusion Matrix
-mean(predTrainClass == trainData$Species) # Prediction Accuracy
+tModel <-  # save the model as tModel 
+rpart.plot(tModel)
 
-table(predTestClass, testClass)           # Confusion Matrix
-mean(predTestClass == testClass)          # Prediction accuracy      
+# 5.4 Make the prediction
+
+
+# 5.5 Access the model performance. Use root mean square value     
 
 
 #########################################################################################################
@@ -45,34 +84,8 @@ mean(predTestClass == testClass)          # Prediction accuracy
 
 library(randomForest)
 set.seed(1)
-rfModel <- randomForest(Species ~ ., data=trainData, mtry=4, ntree=20)
-predClass <- predict(rfModel, newdata = testData)
+rfModel <- randomForest(Species ~ ., data=train, mtry=4, ntree=20)
+predClass <- predict(rfModel, newdata = test)
 table(predClass, testClass)
 rfModel$importance 
-
-
-#########################################################################################################
-# Logistic Regression
-#########################################################################################################
-## In order to have only two classes, observations corresponding 
-## to Species, setosa, has been removed 
-inSetosa <- iris$Species == "setosa"
-myIris <- iris[!inSetosa,]
-myIris$Species <- factor(myIris$Species, levels = c("versicolor", "virginica"))
-
-## Model training, prediction, and validation
-glmModel <- glm(Species ~ Petal.Length, data = myIris, family = binomial(link="logit"))
-predValue <- predict(glmModel, myIris, type = "response")
-prediction <- ifelse(predValue > 0.5, "virginica", "versicolor")
-table(prediction, myIris$Species)
-
-## Adding more predictor variable
-glmModel <- glm(Species ~ Petal.Length + Petal.Width, data = myIris, 
-                family = binomial(link="logit"))
-predValue <- predict(glmModel, myIris, type = "response")
-prediction <- ifelse(predValue > 0.5, "virginica", "versicolor")
-table(prediction, myIris$Species)
-
-
-
 
