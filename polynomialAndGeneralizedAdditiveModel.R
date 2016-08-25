@@ -18,8 +18,10 @@ max(mtcars$wt)
 min(mtcars$wt)
 wtGrid <- seq(1.5, 5.5, length.out = 50)
 prediction <- predict(lm2, newdata = list(wt = wtGrid))
-plot(x=mtcars$wt, y = mtcars$mpg, pch = 19, col= "blue", xlab = "wt", ylab = "mpg") 
-points(x= wtGrid, y = prediction, type="l", col="green")
+plot(x=mtcars$wt, y = mtcars$mpg, pch = 19, col= "blue", xlab = "wt", ylab = "mpg",
+     cex.lab = 2.0, cex.axis = 1.5, cex = 1.5) 
+points(x= wtGrid, y = prediction, type="l", col="green", lwd = 2)
+
 
 ## Generalized additive model
 
