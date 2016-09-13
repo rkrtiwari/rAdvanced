@@ -1,6 +1,6 @@
 library(ggplot2)
 
-# 1. Line plot
+# 1. x mapped to wt, y mapped to mpg and point geometry used
 ggplot(mtcars) + aes(x=wt, y = mpg) + geom_point()
 
 # 2. Bar Plot
