@@ -1,111 +1,55 @@
 library(ggplot2)
 
-# 1. x mapped to wt, y mapped to mpg and point geometry used
+# 1.1 x mapped to wt, y mapped to mpg and point geometry used
 ggplot(mtcars) + aes(x=wt, y = mpg) + geom_point()
 
-# 2. Bar Plot
-ggplot( mtcars, aes(x = factor( cyl))) + geom_bar(width = 0.5, color = "black", fill = "red")
+# 1.2 x mapped to wt and histogram geometry is used
+ggplot(mtcars) + aes(x=wt) + geom_histogram(bins=10)
 
-# mean.mpg <- tapply(mtcars$mpg, mtcars$cyl, mean)
-# mean.mpg
-# names(mean.mpg)
-# ggplot( mean.mpg, aes(x = factor( cyl), y = mean(mpg))) + 
-#   geom_bar(stat = "identity", width = 0.5, color = "black", fill = "red")
+# 1.3 x mapped to cyl and bar geometry is used
+ggplot(mtcars) + aes(x = factor(cyl)) + geom_bar()
 
-# 3. Histogram
-ggplot(mtcars, aes(x = mpg)) + geom_histogram(binwidth = 3, color = "black", fill = "red")
+# 1.4 x mapped to cyl, y mapped to mpg and boxplot geometry used
+ggplot(mtcars) + aes(x = factor(cyl), y = mpg) + geom_boxplot(fill='green')
 
-# 4. Boxplot
-ggplot( mtcars, aes(x = factor( cyl), y = mpg)) + 
-  geom_boxplot(width = 0.6, color = "black", fill = "red")
+# 1.5 x mapped to wt, y mapped to mpg and point and line geometry used
+ggplot(mtcars) + aes(x=wt, y = mpg) + geom_point() + geom_line()
 
-ggplot( mtcars, aes(x = cyl, y = mpg)) + 
-  geom_boxplot(width = 0.9, color = "black", fill = "red")  
+# 2. x mapped to wt, y mapped to mpg, and color mapped to am
+ggplot(mtcars) + aes(x=wt, y = mpg, col = factor(am)) + geom_point()
 
-# 5. scatter plot
-ggplot(mtcars) + aes(x=wt, y=mpg) + geom_point()
+# 3. x mapped to wt, y mapped to mpg, color mapped to am, shape mapped to cyl, size
+# mapped to vs
+ggplot(mtcars) + aes(x=wt, y = mpg, col = factor(am), shape = factor(cyl),
+                     size = factor(vs)) + geom_point()
 
-## Setting the size of the points in the scatter plot
-ggplot(mtcars) + aes(x=wt, y=mpg) + geom_point(size=3)
+# 4. To assign a constant value to an attribute, put it inside the geom 
+ggplot(mtcars) + aes(x=wt, y = mpg, col = factor(am), shape = factor(cyl)) +
+                    geom_point(size = 3)
 
-## Setting the color of the points in the scatter plot
-ggplot(mtcars) + aes(x=wt, y=mpg) + geom_point(size=3, color = "blue")
+# 5. To change x and y scale use appropriate scale command
+ggplot(mtcars) + aes(x=wt, y = mpg, col = factor(am), shape = factor(cyl)) +
+  geom_point(size = 3) + scale_x_continuous(limits=c(1,6)) +
+  scale_y_continuous(limits=c(5,40))
 
-## Setting the shape of the points in the scatter plot
-ggplot(mtcars) + aes(x=wt, y=mpg) + 
-  geom_point(size=3, color = "blue", shape = 17)
+# 6. Setting legend properties using guide
+ggplot(mtcars) + aes(x=wt, y = mpg, col = factor(am), shape = factor(cyl)) +
+  geom_point(size = 3) + guides(col = guide_legend('am'), shape=guide_legend('cyl'))
 
-## Changing labels
-ggplot(mtcars) + aes(x=wt, y=mpg) + geom_point() +
-  labs(x = "Weight", y = "Miles per Gallon", title = "My Plot") +
-  theme(axis.text = element_text(colour = "blue"),
-        axis.title = element_text(size = rel(1.5), angle = 0),
-        plot.title = element_text(size = rel(2.5), colour = "green"))
-  
-## Changing x and y scale
-ggplot(mtcars) + aes(x=wt, y=mpg) + geom_point() +
-  scale_x_continuous(limits = c(1.5,6.5)) +
-  scale_y_continuous(limits = c(5,35))
+# 7. Setting axis properties using theme
+ggplot(mtcars) + aes(x=wt, y = mpg, col = factor(am), shape = factor(cyl)) +
+  geom_point(size = 3) + guides(col = guide_legend('am'), shape=guide_legend('cyl')) +
+  theme(axis.text=element_text(size = 15), axis.title=element_text(size=20))
 
 
-## Grouping data points by variable
-ggplot(mtcars) + aes(x=wt, y=mpg, color = cyl ) + 
-  geom_point(size=3, shape = 17)
-
-ggplot(mtcars) + aes(x=wt, y=mpg, color = factor(cyl) ) + 
-  geom_point(size=3, shape = 17)
-
-ggplot(mtcars) + aes(x=wt, y=mpg, color = factor(cyl), shape = factor(am)) + 
-  geom_point(size=5)
-
-ggplot(mtcars) + aes(x=wt, y=mpg, color = factor(cyl), shape = factor(am)) + 
-  geom_point(size=5) + scale_shape_manual(values = c(4,5))
-
-ggplot(mtcars) + aes(x=wt, y=mpg, color = factor(cyl), shape = factor(am)) + 
-  geom_point(size=5) + scale_shape_manual(values = c(17,18)) +
-  scale_color_brewer(palette = "Set1")
-
-## Adding trend line
+## 8. Plotting subset of data in a separate panel: Facetting
 ggplot(mtcars) + aes(x=wt, y=mpg) + 
   geom_point(size=3, color = "blue", shape = 17) +
-  stat_smooth(method = "lm")
-
-ggplot(mtcars) + aes(x=wt, y=mpg) + 
-  geom_point(size=3, color = "blue", shape = 17) +
-  stat_smooth(method = "lm", se = FALSE)
+  facet_wrap( ~ cyl)
 
 
-## Faceting 1
-ggplot(mtcars) + aes(x=wt, y=mpg) + 
-  geom_point(size=3, color = "blue", shape = 17) +
-  facet_grid(. ~ cyl)
-
-ggplot(mtcars) + aes(x=wt, y=mpg) + 
-  geom_point(size=3, color = "blue", shape = 17) +
-  facet_grid( cyl ~ .)
-
-ggplot(mtcars) + aes(x=wt, y=mpg) + 
-  geom_point(size=3, color = "blue", shape = 17) +
-  facet_grid( cyl ~ am)
-
-## Faceting 2
-library(reshape2)
-mmtcars <- melt(mtcars2, id = c("names", "wt", "hp"), measure.vars = "mpg")
-mmtcars <- melt(mtcars, id = "mpg", measure.vars = c("wt", "hp", "qsec", "drat"))
-head(mmtcars)
-ggplot(mmtcars) + aes(x=value, y = mpg, color = variable) + geom_point(size = 3) +
-  facet_wrap( ~ variable, scales = "free", ncol = 2)
-
-## Faceting 3
-aqm <- melt(airquality, id=c("month", "day"), measure.vars = c("ozone", "temp"), 
-            na.rm=TRUE)
-meanVal <- dcast(aqm, month ~ variable, mean)
-meanValm <- melt(meanVal, id = "month")
-ggplot(meanValm) + aes(x=factor(month), y= value, fill = factor(month)) + 
-  geom_bar(stat="identity") +
-  facet_grid( . ~ variable) +
-  theme(axis.title = element_text(size = rel(1.5)),
-        axis.text = element_text(size   = rel(1.5)),
-        strip.text.x = element_text(size = rel(1.5)))
-
+## Challenge: 
+### 1. Plot Day vs Ozone data for airquality dataset
+### 2. Use different colors for different months
+### 3. Use different panels for different months
 
