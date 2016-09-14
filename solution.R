@@ -86,3 +86,40 @@ summary(m1)$r.squared
 pred <- predict(m1, newdata = boston)
 data.frame(pred, boston$MEDV)
 
+
+## 5. Challenge
+# Build a decision tree model to predict the House Price in Boston
+
+#5.1 Download the data set 
+url <- "https://archive.ics.uci.edu/ml/machine-learning-databases/housing/housing.data"
+boston <- read.table(url, header = FALSE, nrows = -1)
+names(boston) <- c("CRIM", "ZN", "INDUS", "CHAS", "NOX", "RM", "AGE", "DIS", "RAD",
+                   "TAX", "PTRATIO", "B", "LSTAT", "MEDV")
+
+head(boston)
+
+# 5.2 Split the data into train (60%) and test (40%) set
+nr <- nrow(boston)
+set.seed(1)
+inTrain <- sample(1:nr, 0.6*nr)
+train <- boston[inTrain,]
+test <- boston[-inTrain,]
+
+# 5.3 Make the decision tree model (we want to predict MEDV using all other 
+# variables)
+library(rpart)
+library(rpart.plot)
+tModel <-  rpart(MEDV ~ ., data = train) # save the model as tModel 
+rpart.plot(tModel)
+
+# 5.4 Make the prediction
+pred <- predict(tModel, newdata = test)
+data.frame(pred, test$MEDV)
+
+# 5.5 Access the model performance. Use mean squared error     
+
+mean((pred - test$MEDV)^2)
+
+
+
+
