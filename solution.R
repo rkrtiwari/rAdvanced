@@ -6,6 +6,13 @@ colnames(house) <-  c("CRIM", "ZN", "INDUS", "CHAS", "NOX", "RM", "AGE", "DIS", 
   "MEDV") 
 tail(house)
 
+## Challenge: Find the mean value of mpg for each type of gears (3, 4, and 5) in
+## mtcars dataset
+
+head(mtcars)
+mmc <- melt(mtcars, id = 'gear', measure.vars = 'mpg')
+dcast(mmc, gear ~ variable, mean)
+
 ## Challenge: 
 ### 1. Plot Day vs Ozone data for airquality dataset
 ### 2. Use different colors for different months
@@ -20,6 +27,8 @@ ggplot(airquality) + aes(x=Day, y = Ozone) + geom_point() +
 ## iris data set
 ### One line solution
 lapply(iris[,1:4], mean)
+sapply(iris[,1:4], mean)
+
 
 ### Calculating mean for each individual observation
 mean(iris[,1])
@@ -51,4 +60,29 @@ for (i in 1:4){
   print(tapply(iris[[i]], iris[[5]], mean))
 }
 
+
+# Build a linear model to predict the House Price in Boston
+
+# Download the data set 
+url <- "https://archive.ics.uci.edu/ml/machine-learning-databases/housing/housing.data"
+boston <- read.table(url, header = FALSE, nrows = -1)
+names(boston) <- c("CRIM", "ZN", "INDUS", "CHAS", "NOX", "RM", "AGE", "DIS", "RAD",
+                   "TAX", "PTRATIO", "B", "LSTAT", "MEDV")
+
+head(boston)
+
+# Build the linear model (we want to predict MEDV using all other 
+# variables)
+
+m1 <- lm(MEDV ~ ., data = boston)
+
+# Look at the parameters associated with the model. coefficients, r-squared value
+names(m1)
+names(summary(m1))
+m1$coefficients
+summary(m1)$r.squared
+
+# Predict the model performace on the data that was used to build the model
+pred <- predict(m1, newdata = boston)
+data.frame(pred, boston$MEDV)
 
