@@ -74,7 +74,7 @@ rpart.plot(tModel)
 # 5.4 Make the prediction
 
 
-# 5.5 Access the model performance. Use root mean square value     
+# 5.5 Access the model performance. Use Mean square error     
 
 
 #########################################################################################################
@@ -88,4 +88,9 @@ rfModel <- randomForest(Species ~ ., data=train, mtry=4, ntree=20)
 predClass <- predict(rfModel, newdata = test)
 table(predClass, testClass)
 rfModel$importance 
+varImpPlot(rfModel)
+
+## Challenge: Build a random forest model to predict the house price. Compare MSE of
+## rf model with the previous decision tree model. See what are the important variables 
+
 
