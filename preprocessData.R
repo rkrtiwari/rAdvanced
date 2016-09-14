@@ -57,17 +57,18 @@ head(aqm)
 
 dcast(aqm, month + day ~ variable)
 dcast(aqm, day + month ~ variable)
+dcast(aqm, variable ~ month + day)
 meanVal <- dcast(aqm, month ~ variable, mean) # monthly average
+dcast(aqm, variable ~ month, mean)
+
 
 library(ggplot2)
 ggplot(meanVal) + aes(x=month, y= ozone, fill = factor(month)) + 
   geom_bar(stat="identity")
 
-## Advantage of melting. We can plot 2 histograms in 1 command
-meanValm <- melt(meanVal, id = "month")
-ggplot(meanValm) + aes(x=factor(month), y= value, fill = factor(month)) + 
-  geom_bar(stat="identity") +
-  facet_grid( . ~ variable)
+## Challenge: Find the mean value of mpg for each type of gears (3, 4, and 5) in
+## mtcars dataset
+
 
 ########################################################################################################
 # Missing Data
