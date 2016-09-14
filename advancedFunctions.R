@@ -34,8 +34,8 @@ head(iris)
 ##################################################################################################
 # applies a function to each individual group of the data 
 
-tapply(mtcars$mpg, mtcars$cyl, mean, simplify = TRUE)
-tapply(mtcars$mpg, mtcars$am, mean, simplify = TRUE)
+tapply(mtcars$mpg, mtcars$cyl, mean)
+tapply(mtcars$mpg, mtcars$am, mean)
 
 tapply(mtcars$mpg, list(mtcars$cyl, mtcars$am), mean)
 tapply(mtcars$mpg, mtcars[,c(2,9)], mean)
