@@ -121,5 +121,11 @@ data.frame(pred, test$MEDV)
 mean((pred - test$MEDV)^2)
 
 
+## Making House price prediction using Random forest
+library(randomForest)
+rfModel <- randomForest(MEDV ~ ., train)
+pred <- predict(rfModel, newdata = test)
+data.frame(pred, test$MEDV)
 
-
+mean((pred - test$MEDV)^2)
+varImpPlot(rfModel)
