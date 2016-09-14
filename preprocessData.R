@@ -110,7 +110,21 @@ sum(as.numeric(row.names(mpattern)), na.rm = TRUE)
 
 aggr(miss_mtcars, numbers=TRUE) # visualize the missing data pattern graphically 
 
-## missing data imputation
+## Dealing with missing data
+### Complete case analysis
+mean(miss_mtcars$mpg)
+mean(miss_mtcars$mpg, na.rm = TRUE)
+
+m1 <- lm(mpg ~ am + wt + qsec, data = miss_mtcars, na.action = na.omit)
+
+
+### Missing Data Imputation
+#### Mean Substitution
+mean_sub <- miss_mtcars
+mean_sub$qsec[is.na(mean_sub$qsec)] <- mean(mean_sub$qsec, na.rm = TRUE)
+
+
+#### Multiple Imputation
 ## convert categorical variables into factors 
 
 miss_mtcars$vs <- factor(miss_mtcars$vs) 
