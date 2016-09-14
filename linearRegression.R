@@ -41,15 +41,11 @@ names(boston) <- c("CRIM", "ZN", "INDUS", "CHAS", "NOX", "RM", "AGE", "DIS", "RA
 
 head(boston)
 
-# 7.2 Build the linear model (we want to predict MEDV using all other 
+# Build the linear model (we want to predict MEDV using all other 
 # variables)
 
+# Look at the parameters associated with the model. coefficients, r-squared value
 
-# 7.3 Make the prediction
-
-
-# 7.4 Look at the parameters associated with the model. coefficients, r-squared value
-
-# 7.5 Access the model performance. Use root mean square value
+# Predict the model performace on the data that was used to build the model
 
 
