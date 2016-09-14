@@ -5,11 +5,22 @@ plot(fit)
 plot(fit$time.series[,1])
 
 ## moving averages
+# install.packages("forecast")
+library(forecast)
 ma(AirPassengers, order = 12)
 plot(AirPassengers)
 lines(ma(AirPassengers, order = 12), col = "red")
 
+## Easy way to do forecasting
 
+fit <- auto.arima(AirPassengers)
+pred <- predict(fit, n.ahead  = 36)
+U <- pred$pred + 2*pred$se        # upper limit 95% confidence interval 
+L <- pred$pred - 2*pred$se        # lower limit 95% confidence interval
+ts.plot(AirPassengers, pred$pred, U, L, 
+        col=c(1,2,4,4), lty = c(1,1,2,2))
+legend("topleft", c("Actual", "Forecast", "Error Bounds (95% Confidence)"), 
+       col=c(1,2,4), lty=c(1,1,2), bty = 'n')
 
 ## Stationary Series
 ## A series whose statistical properties such as mean, variance, autocorrelation,
@@ -80,7 +91,7 @@ v2 <- diff(v1)
 plot(v2)
 
 ## test to check if the series is stationary
-install.packages("tseries")
+##install.packages("tseries")
 library(tseries)
 kpss.test(AirPassengers)
 kpss.test(log(AirPassengers))
@@ -108,18 +119,8 @@ L <- pred$pred - 2*pred$se        # lower limit 95% confidence interval
 ts.plot(AirPassengers, exp(pred$pred), exp(U), exp(L), 
         col=c(1,2,4,4), lty = c(1,1,2,2))
 legend("topleft", c("Actual", "Forecast", "Error Bounds (95% Confidence)"), 
-       col=c(1,2,4), lty=c(1,1,2))
+       col=c(1,2,4), lty=c(1,1,2), bty = 'n')
 
 
-## Easy way to do forecasting
-# install.packages("forecast")
-library(forecast)
-fit <- auto.arima(AirPassengers)
-pred <- predict(fit, n.ahead  = 36)
-U <- pred$pred + 2*pred$se        # upper limit 95% confidence interval 
-L <- pred$pred - 2*pred$se        # lower limit 95% confidence interval
-ts.plot(AirPassengers, pred$pred, U, L, 
-        col=c(1,2,4,4), lty = c(1,1,2,2))
-legend("topleft", c("Actual", "Forecast", "Error Bounds (95% Confidence)"), 
-       col=c(1,2,4), lty=c(1,1,2))
+
 
